@@ -1,0 +1,14 @@
+#!usr/bin/env php
+<?php
+
+include_once 'bootstrap.php';
+
+switch ($argv[1]) {
+    case 'database':
+        include_once 'bin/database.php';
+        break;
+
+    default:
+        # code...
+        break;
+}

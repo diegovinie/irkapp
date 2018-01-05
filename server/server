@@ -1,0 +1,15 @@
+#!usr/bin/env php
+<?php
+
+include_once 'bootstrap.php';
+
+use Websocket\SocketServer;
+
+$srv = new SocketServer(SRV_HOST, SRV_PORT);
+
+try {
+  $srv->run();
+}
+catch (Exception $e) {
+  $srv->stdout($e->getMessage());
+}
