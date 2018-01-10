@@ -28,13 +28,15 @@ function bquote($item){
  */
 function convertCsvArray(/*resource*/ $handle){
 
-    $keys = fgetcsv($handle);
     $data = array();
+    $keys = fgetcsv($handle);
 
     while(!feof($handle)){
+
         $values = fgetcsv($handle);
-        $i = 0;
         $row = array();
+        $i = 0;
+
         if(!$values) break;
 
         for($i = 0; $i < count($keys); $i++){

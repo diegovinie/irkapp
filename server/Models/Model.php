@@ -152,7 +152,7 @@ class Model
                     echo $stmt->errorInfo()[2];
                 }
                 else{
-                    var_dump($stmt->{($this->retrieve)}(PDO::FETCH_ASSOC)) ;
+                    // var_dump($stmt->{($this->retrieve)}(PDO::FETCH_ASSOC)) ;
                     return $stmt->{($this->retrieve)}(PDO::FETCH_ASSOC);
                 }
                 break;

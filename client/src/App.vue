@@ -1,5 +1,6 @@
 <template lang="pug">
 v-app(dark light)
+    <div ></div>
     div(style={
             backgroundColor: '#cee',
             width: '280px',
@@ -12,7 +13,7 @@ v-app(dark light)
         v-expansion-panel
             v-expansion-panel-content
                 div(slot="header") Chat
-                v-tabs(fixed, centered style={height: "440px"})
+                v-tabs(fixed, v-model="active",  centered style={height: "440px"})
                     v-toolbar(app color="cyan" style={
                             padding: '0',
                             fontSize: '12px',
@@ -20,26 +21,47 @@ v-app(dark light)
                         //- v-text-field(solo, label="Search", append-icon="keyboard_voice", prepend-icon="search")
                         v-tabs-bar(color="transparent" dark )
                             v-tabs-slider(color="yellow" style={margin: '0px', maxWidth: '80px'})
-                            v-tabs-item(href="#tab-chat1" style={margin: '0px', maxWidth: '80px'}) Ramon
+                            v-tabs-item(href="#tab-chat1" style={margin: '0px', maxWidth: '80px'}) {{ chat.name }}
                             v-tabs-item(href="#tab-usuarios" style={margin: '0px', maxWidth: '80px'}) Usuarios
-                            v-tabs-item(href="#tab-historial" style={margin: '0px', maxWidth: '80px'}) Historial
+                            v-tabs-item(href="#tab-opciones" style={margin: '0px', maxWidth: '80px'}) Opciones
                     v-tabs-items
                         v-tabs-content#tab-chat1(style={backgroundColor: 'pink'})
                             Chat
                         v-tabs-content#tab-usuarios(style={backgroundColor: 'pink'})
-                            UsersList
+                            UsersList(@changeWindow="changeWindow")
                         v-tabs-content#tab-opciones
                             Options
 </template>
 
 <script>
+import ws from './ws'
+import store from './store'
 
 export default {
   name: 'app',
-  data () {
-    return {
 
+  data: function () {
+    return {
+      ws: ws,
+      ala: 'hola',
+      tabs: ['tab-chat1', 'tab-usuarios', 'tab-opciones'],
+      active: null
     }
+  },
+
+  computed: {
+    chat: () => store.state.chat
+  },
+
+  methods: {
+    changeWindow: function (win) {
+
+      this.active = win
+    }
+  },
+
+  created () {
+
   }
 }
 </script>

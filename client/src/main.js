@@ -7,6 +7,8 @@ import 'vuetify/dist/vuetify.css'
 import 'vuetify/src/stylus/main.styl'
 import './assets/css/materialicons.css'
 
+import store from './store'
+
 import Chat from './components/Chat'
 import UsersList from './components/UsersList'
 import Options from './components/Options'
@@ -22,6 +24,9 @@ Vue.component('Options', Options)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+
+  store,
+
   beforeCreate () {
     (function () {
       var cont = document.createElement('div')
@@ -29,5 +34,6 @@ new Vue({
       document.body.appendChild(cont)
     })()
   },
+  
   render: h => h(App)
 })

@@ -6,32 +6,88 @@ use ghedipunk\PHPWebsockets\WebSocketServer;
 
 class SocketServer extends WebSocketServer
 {
-    public function sendUserList()
+    public function __construct($addr, $port, $bufferLength = 2048)
+    {
+        parent::__construct($addr, $port, $bufferLength = 2048);
+    }
+    
+    public function sendUserList($user=null)
     {
         $usr = new \Models\User();
 
-        $list = $usr->find('id', 'email', 'status')
+        $usersList = $usr->find('id', 'email', 'status')
             ->whereStatus('!=', 0)->exec();
 
-        $response = json_encode($list);
+        $preRes = [
+            'header' => 'update',
+            'data' => [
+                'usersList' => $usersList
+            ]
+        ];
 
-        foreach ($this->users as $user) {
+        $response = json_encode($preRes);
+
+        if($user){
             $this->send($user, $response);
         }
+        else{
+            foreach ($this->users as $user) {
+                $this->send($user, $response);
+            }
+        }
+    }
+
+    public function checkUserStatus($user=null)
+    {
+        $users = new \Model\User;
+        $usersList = $users->findAll()->whereStatus('!=', 0)->exec();
+
+        // revisa cada item de la base de datos
+        $inac = array_filter(function($dbU){
+
+            return !in_array(
+                $dbU['name'],
+                array_values( array_column($this->users, 'id') )
+            );
+        } , $usersList);
+
+        foreach ($inac as $user) {
+            # code...
+            $users->update('status', '0')->whereName('=', $user['id'])->exec();
+        }
+
     }
     //protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
 
     protected function process ($user, $message) {
 
 
-      $this->send($user,$message);
+      // $this->send($user,$message);
     //   \hlp\logger("de: {$GLOBALS['origin']} >> $message");
         // var_dump($user);
         \hlp\logger("de: $user->id >> $message");
+        var_dump(json_decode($message));
+        $m = json_decode($message);
+
+        if($m->header == 'update'){
+          if($m->data->status){
+            $usr = new \Models\User;
+            $usr->update('status', $m->data->status)
+              ->whereName('=', $user->id)->exec();
+          }
+        }
+
+        if($m->header == 'get'){
+          if($m->data == 'users'){
+
+            $this->sendUserList($user);
+          }
+        }
 
     }
 
     protected function connected ($user) {
+
 
         // ob_start();
         // var_dump($this);
@@ -39,6 +95,8 @@ class SocketServer extends WebSocketServer
         // ob_end_clean();
 
         \Controllers\Registration::connect($user);
+        echo "despues de connect \n";
+        $this->sendUserList();
 
       // Do nothing: This is just an echo server, there's no need to track the user.
       // However, if we did care about the users, we would probably have a cookie to
