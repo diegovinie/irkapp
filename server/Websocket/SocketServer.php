@@ -9,8 +9,10 @@ class SocketServer extends WebSocketServer
     public function __construct($addr, $port, $bufferLength = 2048)
     {
         parent::__construct($addr, $port, $bufferLength = 2048);
+
+        self::checkUserStatus();
     }
-    
+
     public function sendUserList($user=null)
     {
         $usr = new \Models\User();
@@ -39,21 +41,21 @@ class SocketServer extends WebSocketServer
 
     public function checkUserStatus($user=null)
     {
-        $users = new \Model\User;
-        $usersList = $users->findAll()->whereStatus('!=', 0)->exec();
+        $users = new \Models\User;
+        $usersList = $users->findAll()->whereStatus('!=', '0')->exec();
 
         // revisa cada item de la base de datos
-        $inac = array_filter(function($dbU){
+        $inac = array_filter($usersList, function($dbU){
 
             return !in_array(
                 $dbU['name'],
                 array_values( array_column($this->users, 'id') )
             );
-        } , $usersList);
+        });
 
         foreach ($inac as $user) {
-            # code...
-            $users->update('status', '0')->whereName('=', $user['id'])->exec();
+            var_dump($user['id']);
+            $users->update('status', '0')->whereId('=', "{$user['id']}")->exec();
         }
 
     }

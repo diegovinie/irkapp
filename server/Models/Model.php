@@ -138,7 +138,7 @@ class Model
 
         if($this->parameters){
             foreach ($this->parameters as $key => $value) {
-                // echo "bindParam('$key', '$value')";
+                echo "bindParam('$key', '$value')";
                 $stmt->bindParam("$key", $value);
             }
         }
@@ -186,6 +186,7 @@ class Model
     {
         $this->columns = null;
         $this->conditions = null;
+        $this->parameters = null;
         $this->joins = null;
         $this->query = null;
         $this->queryType = null;

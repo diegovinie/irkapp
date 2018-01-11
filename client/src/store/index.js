@@ -12,10 +12,14 @@ export default new Vuex.Store({
     chat: {
       id: null,
       name: 'Chat'
-    }
+    },
+    mainWindow: 'toolbar',
+    chats: [],
   },
   actions: {
-
+    CHANGEWINDOW ({commit}, win) {
+      commit('SETWINDOW', win)
+    }
   },
   mutations: {
     SETUSERS (state, data) {
@@ -27,6 +31,15 @@ export default new Vuex.Store({
     SETCHAT (state, data) {
       state.chat.name = data.email
       state.chat.id = data.id
-    }
+    },
+    SETWINDOW (state, data) {
+      state.mainWindow = data
+    },
+    ADDCHAT (state, data) {
+      console.log('addchat', data)
+      state.chats.push({
+        user: data.email
+      })
+    },
   }
 })

@@ -101,6 +101,11 @@ class Schema
         $this->keys = "PRIMARY KEY (`$name`)";
     }
 
+    public function unique($col)
+    {
+        $this->keys .= ", UNIQUE `$col` (`$col`)";
+    }
+
     private function addToColumn(/*string*/ $stmt)
     {
         $this->columns .= ($this->columns != ''? ', ' : '') .$stmt;

@@ -9,24 +9,20 @@ import './assets/css/materialicons.css'
 
 import store from './store'
 
+import ToolBar from './components/ToolBar2'
 import Chat from './components/Chat'
-import UsersList from './components/UsersList'
-import Options from './components/Options'
-
-Vue.config.productionTip = false
 
 Vue.use(Vuetify)
 
+Vue.component('ToolBar', ToolBar)
 Vue.component('Chat', Chat)
-Vue.component('UsersList', UsersList)
-Vue.component('Options', Options)
+
+Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-
   store,
-
   beforeCreate () {
     (function () {
       var cont = document.createElement('div')
@@ -34,6 +30,5 @@ new Vue({
       document.body.appendChild(cont)
     })()
   },
-  
   render: h => h(App)
 })
