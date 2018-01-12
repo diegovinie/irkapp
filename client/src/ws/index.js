@@ -15,6 +15,20 @@ socket.onmessage = function (msg) {
   if (pmsg.header == 'update') {
     store.commit('SETUSERS', pmsg.data.usersList)
   }
+
+  if (pmsg.header == 'request') {
+    if(pmsg.type == 'pseudoProfile') {
+      console.log('pseudoProfile')
+      store.dispatch('PSEUDOPROFILE', pmsg.content)
+    }
+
+    if(pmsg.type == 'sign') {
+      console.log('sign')
+      const temp = '<div><input type="text" placeholder="correo-e" onsubmit.prevent="send()" /></div>'
+      store.dispatch('SIGN', {show: true, timeout: 10000, content: temp})
+
+    }
+  }
 }
 
 socket.onclose = function (msg) {

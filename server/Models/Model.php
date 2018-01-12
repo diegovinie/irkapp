@@ -21,6 +21,7 @@ class Model
      */
     private $db;
 
+    public $order;
     public $columns;
     public $conditions;
     public $joins;
@@ -54,6 +55,14 @@ class Model
     public function findAll()
     {
         return $this->find('*');
+    }
+
+    public function descend($col, $limit=null)
+    {
+        $this->order .= " ORDER BY `$col` DESC";
+        $this->order .= $limit? "LIMIT $limit" : "";
+
+        return $this;
     }
 
     public function findOne($columns)

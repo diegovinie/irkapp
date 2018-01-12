@@ -11,11 +11,13 @@ import store from './store'
 
 import ToolBar from './components/ToolBar2'
 import Chat from './components/Chat'
+// import Snack from './components/Snack'
 
 Vue.use(Vuetify)
 
 Vue.component('ToolBar', ToolBar)
 Vue.component('Chat', Chat)
+// Vue.component('Snack', Snack)
 
 Vue.config.productionTip = false
 

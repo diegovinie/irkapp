@@ -1,21 +1,35 @@
 <template lang="pug">
 v-app(dark light)
-    div(style={
-            backgroundColor: '#cee',
-            width: '280px',
-            maxHeight: '488px',
-            position: 'fixed',
-            right: '0',
-            bottom: '0',
-            margin: 'auto',
-            })
-        v-expansion-panel
-            v-expansion-panel-content
-                div(slot="header") Chat
-                div(style={height: "440px"})
-                  tool-bar(v-show="window == 'toolbar'")
-                  chat(v-show="window == 'chat'")
-                    v-btn(@click="$data.window = 'toolbar'") tocame
+  v-snackbar(
+      :timeout="snack.timeout"
+      color=""
+      multi-line
+      vertical
+      absulute
+      right
+      v-model="snack.show"
+      :slot="snack.content"
+      style={bottom: '170px', right: '0px', maxWidth: '330px'}) ggg
+    //- div#snack-content hola fulano
+    //- div#snack-action
+    //- v-btn No soy fulano
+    v-btn(dark flat @click.native="snackbar = false") Cerrar
+  div(style={
+          backgroundColor: '#cee',
+          width: '280px',
+          maxHeight: '488px',
+          position: 'fixed',
+          right: '0',
+          bottom: '0',
+          margin: 'auto',
+          })
+      v-expansion-panel
+          v-expansion-panel-content
+              div(slot="header") Chat
+              div(style={height: "440px"})
+                tool-bar(v-show="window == 'toolbar'")
+                chat(v-show="window == 'chat'")
+                  v-btn(@click="$data.window = 'toolbar'") tocame
 </template>
 
 <script>
@@ -27,7 +41,6 @@ export default {
 
   data: function () {
     return {
-      ws: ws,
       ala: 0,
       tabs: ['tab-chat1', 'tab-usuarios', 'tab-opciones'],
       active: null,
@@ -36,8 +49,10 @@ export default {
   },
 
   computed: {
+    ws: () => ws,
     chat: () => store.state.chat,
     window: () => store.state.mainWindow,
+    snack: () => store.state.snack
   },
 
   methods: {
@@ -50,8 +65,11 @@ export default {
     }
   },
 
-  created () {
+  mounted () {
 
+    // setTimeout( () => {
+    //   this.snackbar = true
+    // }, 2000)
   }
 }
 </script>

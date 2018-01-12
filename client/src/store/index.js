@@ -15,10 +15,28 @@ export default new Vuex.Store({
     },
     mainWindow: 'toolbar',
     chats: [],
+    snack: {
+      show: false,
+      content: '',
+      timeout: 10000
+    }
   },
   actions: {
     CHANGEWINDOW ({commit}, win) {
       commit('SETWINDOW', win)
+    },
+    PSEUDOPROFILE ({commit}, profile) {
+      const snack = {
+        show: true,
+        content: `<div>Hola {{ profile.nickname }}!</div>
+                  <v-btn>No soy {{ profile.nickname }}</v-btn>`,
+        timeout: 10000
+      }
+      commit('SETSNACK', snack)
+    },
+    SIGN ({commit}, snack) {
+      console.log('en sign')
+      commit('SETSNACK', snack  )
     }
   },
   mutations: {
@@ -41,5 +59,8 @@ export default new Vuex.Store({
         user: data.email
       })
     },
+    SETSNACK (state, data) {
+      state.snack = data
+    }
   }
 })

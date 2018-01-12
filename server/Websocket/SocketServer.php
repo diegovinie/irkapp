@@ -10,7 +10,29 @@ class SocketServer extends WebSocketServer
     {
         parent::__construct($addr, $port, $bufferLength = 2048);
 
-        self::checkUserStatus();
+        self::checkClientStatus();
+    }
+
+    public function checkUser($user)
+    {
+        $useM = new \Models\User;
+
+        $profile = $useM->findOne('id', 'nick', 'email')
+                  ->whereOrigin('=', $user->headers['origin'])
+                  ->descend('id')->exec();
+
+        if($profile){
+            $this->send($user, json_encode([
+                'header' => 'pseudoProfile',
+                'content' => $profile
+            ]));
+        }
+        else{
+            $this->send($user, json_encode([
+                'header' => 'request',
+                'type' => 'sign'
+            ]));
+        }
     }
 
     public function sendUserList($user=null)
@@ -39,27 +61,51 @@ class SocketServer extends WebSocketServer
         }
     }
 
-    public function checkUserStatus($user=null)
+    public function checkClientStatus($user=null)
     {
-        $users = new \Models\User;
-        $usersList = $users->findAll()->whereStatus('!=', '0')->exec();
+        $clis = new \Models\Client;
+        $cliList = $clis->findAll()->whereStatus('!=', '0')->exec();
 
         // revisa cada item de la base de datos
-        $inac = array_filter($usersList, function($dbU){
+        $inacs = array_filter($cliList, function($dbU){
 
             return !in_array(
-                $dbU['name'],
+                $dbU['id'],
                 array_values( array_column($this->users, 'id') )
             );
         });
 
-        foreach ($inac as $user) {
-            var_dump($user['id']);
-            $users->update('status', '0')->whereId('=', "{$user['id']}")->exec();
+        foreach ($inacs as $ina) {
+            $clis->update('status', '0')->whereId('=', "{$ina['id']}")->exec();
         }
 
     }
     //protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
+
+    public function checkEmail($user, $email)
+    {
+        $user = $useM->find('id')
+                  ->whereEmail('=', "$email")->exec();
+
+        $tpye = $user? 'password' : 'signup';
+
+        $this->send($user, json_encode([
+            'header' => 'request',
+            'type' => $type
+        ]));
+    }
+
+    public function checkPassword($user, $email, $password)
+    {
+        $profile = $useM->findOne('id', 'nickname', 'avatar')
+                     ->whereEmail('=', "$email")
+                     ->wherePassword('=', md5($password))
+                     ->exec();
+        $res = $profile? ['header' => 'profile', 'content' => $profile] :
+            ['header' => 'error', 'type' => 'wrong_password'];
+
+        $this->send($user, json_encode($res));
+    }
 
     protected function process ($user, $message) {
 
@@ -86,19 +132,30 @@ class SocketServer extends WebSocketServer
           }
         }
 
+        if($m->header == 'post'){
+            if($m->type == 'email'){
+
+                $this->checkEmail($user, $m->data);
+            }
+            if($m->type == 'password'){
+                $this->checkPassword($user, ...$m->data);
+            }
+
+        }
+
     }
 
     protected function connected ($user) {
 
+        // el origen es conocido? welcomeback : ask sign
+        // sign? log : send annonymus
+        // log? auth & send profile : signup
+        // signup? reg, auth & send profile : send annonymus
 
-        // ob_start();
-        // var_dump($this);
-        // file_put_contents('ser', ob_get_clean());
-        // ob_end_clean();
+        $this->checkUser($user);
 
-        \Controllers\Registration::connect($user);
-        echo "despues de connect \n";
-        $this->sendUserList();
+
+        // $this->sendUserList();
 
       // Do nothing: This is just an echo server, there's no need to track the user.
       // However, if we did care about the users, we would probably have a cookie to

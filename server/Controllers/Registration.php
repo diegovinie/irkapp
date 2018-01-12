@@ -2,36 +2,50 @@
 
 namespace Controllers;
 
-use Models\User;
+// use Models\User;
 use ghedipunk\PHPWebsockets\WebSocketUser;
 
 class Registration extends Controller
 {
     public function connect(WebSocketUser $user)
     {
-        $userModel = new User;
+        $cliM = new \Models\Client;
+        $useM = new \Models\User;
+
+        $a = $useM->find('id', 'nickname', 'avatar')->whereClient('=', "$user->id")->exec();
+
+        if($a){
+            // retorna
+        }
+        else{
+            $b = $useM->find('id', 'nickname', 'avatar')->whereOrigin('=', "{$user->headers['origin']}")->descend('id', 1)->exec();
+            if($b){
+                // retorna
+            }
+            else{
+
+            }
+        }
 
         // inserta el nuevo usuario
-        $userModel->insert(
-            'null',
+        $cliM->insert(
             "'" .$user->id ."'",
-            'null',
             "'" .$user->headers['origin'] ."'",
-            1
-            )->exec();
+            'NULL',
+            1)->exec();
 
-          $id = $userModel->getLastId();
+          $id = $cliM->db->query("SELECT COUNT(id) FROM clients")->fetchColumn(0);
 
           // act. el numbre de usuario
-          $userModel->update('email', "invitado$id")
+          $cliM->update('email', "invitado$id")
               ->whereId('=', $id)->exec();
     }
 
     public function disconnect(WebSocketUser $user)
     {
-        $userModel = new User;
+        $cliM = new \Models\User;
 
-        $userModel->update('status', 0)
+        $cliM->update('status', 0)
             ->whereName('=', $user->id)->exec();
     }
 }

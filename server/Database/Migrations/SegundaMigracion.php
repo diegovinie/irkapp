@@ -18,7 +18,7 @@ class SegundaMigracion extends Migrations
         Schema::create('users', function(Schema $table){
             $table->increment('id');
             $table->string('client', 16);
-            $table->string('ip', 64, [
+            $table->string('origin', 64, [
                 'comment' => 'ultimo ip conocido',
             ]);
             $table->string('nickname', 32);
