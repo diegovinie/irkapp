@@ -1,10 +1,20 @@
 <?php
+/**
+ * Métodos para comunicarse con la base de datos
+ *
+ * @version 0.1 09ABR18
+ * @author diego.viniegra@gmail.com
+ */
 
 namespace Models;
 
 use Database\PDOe;
 use PDO;
 
+/**
+ * La clase con las funcionalidades. En teoría es una clase abstracta y
+ * debe ser heredada.
+ */
 class Model
 {
     /**
@@ -22,30 +32,44 @@ class Model
     private $db;
 
     public $order;
+
     public $columns;
+    /* Array(4) de condicionales para where */
     public $conditions;
+    /* Array(4) assoc de parámetros joins */
     public $joins;
+    /* Array assoc de parámetros para PDO::Execute() */
     public $parameters;
+    /* La sentencia sql que se va a ejecutar */
     public $query;
+    /* tipo de sentencia: insert, update, select*/
     public $queryType;
+    /* La forma de extraer los resultados */
     public $retrieve = 'fetchAll';
 
     public function __construct($table=null)
     {
         if($table) $this->table = $table;
 
+        // revisar $app: aparentemente no existe
         $this->db = isset($app['db'])? $app['db'] : PDOe::connect();
     }
 
-    public function find(...$columns)
+    /**
+     * Crea una consulta de una o más columnas
+     *
+     * @return string la consulta sql
+     */
+    public function find(/*string*/ ...$columns)
     {
         $this->clear();
         $this->queryType = 'select';
 
+        // Los parámetros se pasan por back quotes por seguridad
         $bqCols = array_map('\hlp\bquote', $columns);
 
         $this->columns = implode($bqCols, ', ');
-        echo $this->columns;
+        \hlp\logger($this->columns, true);
 
         $this->query = "SELECT $this->columns FROM `$this->table`";
 
@@ -57,7 +81,10 @@ class Model
         return $this->find('*');
     }
 
-    public function descend($col, $limit=null)
+    /**
+     * Agrega orden a la consulta
+     */
+    public function descend(/*string*/ $col, $limit=null)
     {
         $this->order .= " ORDER BY `$col` DESC";
         $this->order .= $limit? "LIMIT $limit" : "";
@@ -65,14 +92,23 @@ class Model
         return $this;
     }
 
+    /**
+     * Consulta para solo el primer resultado
+     */
     public function findOne($columns)
     {
+        // Para extraer solo el primer resultado
         $this->retrieve = 'fetch';
 
         return $this->find($columns);
     }
 
-    public function insert(...$args)
+    /**
+     * Crea la sentencia para un insert Prepara la instancia.
+     *
+     * @return Model el objeto mismo
+     */
+    public function insert(/*string*/ ...$args)
     {
         $this->clear();
         $this->queryType = 'insert';
@@ -81,7 +117,12 @@ class Model
         return $this;
     }
 
-    public function update($col, $value)
+    /**
+     * Crea la sentencia para un Update. Prepara la instancia.
+     *
+     * @return Model el objeto mismo
+     */
+    public function update(/*string*/ $col, /*string*/ $value)
     {
         $this->clear();
         $this->queryType = 'update';
@@ -89,6 +130,9 @@ class Model
         return $this;
     }
 
+    /**
+     * Devuelve el último id insertado
+     */
     public function getLastId()
     {
         $res = $this->db->query("SELECT LAST_INSERT_ID()");
@@ -96,9 +140,17 @@ class Model
         return $res->fetchColumn(0);
     }
 
+    /**
+     * Prepara un where en la instancia
+     *
+     * @return Model el objeto mismo
+     */
     public function where($col, $rel, $value)
     {
+        // Lista de condicionales
         $types = array('=', '!=', '<', '>', '<=', '>=');
+
+        // si no está en la lista manda error
         if(!in_array($rel, $types)) throw error;
 
         $this->conditions[] = [$col, $rel, ":$col", $value];
@@ -107,6 +159,16 @@ class Model
         return $this;
     }
 
+    /**
+     * Prepara un join en la instancia
+
+     * @param string $type tipo de join
+     * @param string $table la tabla a unir
+     * @param string $map origen
+     * @param string $to destino
+     *
+     * @return Model el objeto mismo
+     */
     public function join($type, $table, $map, $to)
     {
         $this->joins[] = compact('type', 'table', 'map', 'to');
@@ -114,6 +176,9 @@ class Model
         return $this;
     }
 
+    /**
+     * Devuelve un anexo con los where a la sentencia sql
+     */
     private function analizeWhere()
     {
         $wherePart = '';
@@ -121,12 +186,16 @@ class Model
         if($this->conditions){
             foreach ($this->conditions as $cond) {
                 $wherePart .= $wherePart == ''? ' WHERE' : ' AND';
+                // Paramétricos execute
                 $wherePart .= " `$cond[0]` $cond[1] $cond[2]";
             }
         }
         return $wherePart;
     }
 
+    /**
+     * Devuelve un anexo con los join a la sentencia sql
+     */
     private function analizeJoins()
     {
         $joinPart = '';
@@ -140,25 +209,30 @@ class Model
         return $joinPart;
     }
 
+    /**
+     * Ejecuta el query.
+     */
     public function exec()
     {
-        echo $this->query .$this->analizeJoins() .$this->analizeWhere();
-        $stmt = $this->db->prepare($this->query .$this->analizeJoins() .$this->analizeWhere() );
+        $sentence = $this->query .$this->analizeJoins() .$this->analizeWhere();
+        \hlp\logger($sentence, true);
+        $stmt = $this->db->prepare($sentence);
 
+        // Amarre de parámetros
         if($this->parameters){
             foreach ($this->parameters as $key => $value) {
-                echo "bindParam('$key', '$value')";
+                // echo "bindParam('$key', '$value')";
                 $stmt->bindParam("$key", $value);
             }
         }
 
         $res = $stmt->execute();
-        echo "\n";
 
+        // Revisión de los resultados según el tipo de query
         switch ($this->queryType) {
             case 'select':
                 if(!$res){
-                    echo $stmt->errorInfo()[2];
+                    \hlp\logger($stmt->errorInfo()[2]);
                 }
                 else{
                     // var_dump($stmt->{($this->retrieve)}(PDO::FETCH_ASSOC)) ;
@@ -188,9 +262,11 @@ class Model
                 die('error en queryType');
                 break;
         }
-
     }
 
+    /**
+     * Limpia algunos atributos. Usualmente al empezar una consulta
+     */
     private function clear()
     {
         $this->columns = null;
@@ -201,6 +277,10 @@ class Model
         $this->queryType = null;
     }
 
+    /**
+     * Llamada alternativa al método where()
+     * Ejem: ->whereId('=', 2)
+     */
     public function __call($method, $args)
     {
         if(strpos($method, 'where') === 0){

@@ -1,10 +1,23 @@
 <?php
+/**
+ * Funciones de ayuda
+ *
+ * @version 0.1 09ABR18
+ * @author diego.viniegra@gmail.com
+ */
+
 namespace hlp;
 
+/**
+ * Registra salida (incompleta)
+ *
+ * @param string $string la cadena a registrar
+ * @param bool $debug activa el registro
+ */
 function logger($string, $debug=false){
 
     if($debug){
-
+        // Verifica si la depuración es activa en configuración
         if(DEBUG == true){
             echo $string;
             echo "\n";

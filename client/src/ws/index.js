@@ -1,3 +1,7 @@
+/*
+ * Revisar msg = {..., data: (json){header: string, type: string, data: mixed}}
+ */
+
 import store from '../store'
 
 const url = 'ws://localhost:9000/'
@@ -7,21 +11,31 @@ socket.onopen = function (msg) {
   console.log('Status: ' + this.readyState)
 }
 
+/**
+ * Acciones al entrar un mensaje
+ *
+ * @param {object} msg {... data: json}
+ */
 socket.onmessage = function (msg) {
-  // console.log(msg)
+
   const pmsg = JSON.parse(msg.data)
   console.log(pmsg)
 
+  // Si el servidor manda actualización
   if (pmsg.header == 'update') {
+    // actualiza la lista de usuarios
     store.commit('SETUSERS', pmsg.data.usersList)
   }
 
+  // Se el servidor pide algo
   if (pmsg.header == 'request') {
+    // perfil
     if(pmsg.type == 'pseudoProfile') {
       console.log('pseudoProfile')
+      // Manda el perfil??
       store.dispatch('PSEUDOPROFILE', pmsg.content)
     }
-
+    // no recuerdo ???
     if(pmsg.type == 'sign') {
       console.log('sign')
       const temp = '<div><input type="text" placeholder="correo-e" onsubmit.prevent="send()" /></div>'

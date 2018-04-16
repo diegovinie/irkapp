@@ -1,9 +1,16 @@
 #!usr/bin/env php
 <?php
-
-include_once 'bootstrap.php';
+/**
+ * Ejecutable. Inicia el servidor.
+ *
+ * @param pendiente
+ * @version 0.1 09ABR18
+ * @author diego.viniegra@gmail.com
+ */
 
 use Websocket\SocketServer;
+
+include_once 'bootstrap.php';
 
 $srv = new SocketServer(SRV_HOST, SRV_PORT);
 

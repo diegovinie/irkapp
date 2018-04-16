@@ -1,4 +1,10 @@
 <?php
+/**
+ * Autocarga de clases
+ *
+ * @version 0.1 09ABR18
+ * @author diego.viniegra@gmail.com
+ */
 
 spl_autoload_register(function($class){
 

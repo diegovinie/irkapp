@@ -1,5 +1,13 @@
 #!usr/bin/env php
 <?php
+/**
+ * Ejecutable. Realiza tareas de mantenimiento.
+ *
+ * Uso: $ console database [opción] // tareas de la base de datos
+ *
+ * @version 0.1 09ABR18
+ * @author diego.viniegra@gmail.com
+ */
 
 include_once 'bootstrap.php';
 

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Es la clase principal, extiende a WebSocketServer (Adam Alexander, 2012) y
+ * se encarga de manejar las peticiones y mantener acciones de control.
+ *
+ * @version 0.1 09ABR18
+ * @author diego.viniegra@gmail.com
+ */
 
 namespace Websocket;
 
