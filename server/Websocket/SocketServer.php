@@ -117,14 +117,16 @@ class SocketServer extends WebSocketServer
     protected function process ($user, $message) {
 
 
-      // $this->send($user,$message);
-    //   \hlp\logger("de: {$GLOBALS['origin']} >> $message");
+        // $this->send($user,$message);
+        //   \hlp\logger("de: {$GLOBALS['origin']} >> $message");
         // var_dump($user);
         \hlp\logger("de: $user->id >> $message");
         var_dump(json_decode($message));
         $m = json_decode($message);
 
+        // Updates
         if($m->header == 'update'){
+          // Actualiza el status
           if($m->data->status){
             $usr = new \Models\User;
             $usr->update('status', $m->data->status)
@@ -132,20 +134,31 @@ class SocketServer extends WebSocketServer
           }
         }
 
+        // Gets
         if($m->header == 'get'){
+          // Pide la lista de usuarios
           if($m->data == 'users'){
 
             $this->sendUserList($user);
           }
         }
 
+        // Posts
         if($m->header == 'post'){
+            // Manda a chequear el email
             if($m->type == 'email'){
 
                 $this->checkEmail($user, $m->data);
             }
+            // Manda a chequear la clave
             if($m->type == 'password'){
                 $this->checkPassword($user, ...$m->data);
+            }
+
+            // Manda mensaje a un usuario
+            if($m->type == 'message'){
+
+              $this->send($m->data->user, $m->data->content)
             }
 
         }
