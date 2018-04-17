@@ -1,0 +1,100 @@
+/src
+  /api		# vacío
+    index.js
+  /assets
+    /css
+      materialicons.css
+    logo.png
+  /components
+    /ToolBar2
+      /components
+	ChatList.vue
+	Contacts.vue
+	Options.vue
+      index.vue
+    Chat.vue
+    Snack.vue
+    ToolBar.vue
+  /store
+    index.js
+  /ws
+    index.js
+  /static
+  /test
+    /e2e
+    /unit
+
+------------------------------
+store.js
+
+  state:
+    ws		# instancia de WebSocket
+    users: [array]
+    chat: {id, name}
+    mainWindow: [string]
+    chats: [array]
+    snack: {show [bool], content [string], timeout [int]}
+
+  actions:
+    CHANGEWINDOW	# Cambia la ventana a un nuevo chat
+    PSEUDOPROFILE	# ???
+    SIGN		# ???
+
+  mutations:
+    SETUSERS	# fija un nuevo array de usuarios
+    SETCHAT 	# establece el chat activo
+    ADDCHAT	# agrega al array chats uno nuevo
+    SETSNACK	# cambia los datos del snack
+
+main.js
+  Prepara Vue:
+    use Vuetify
+    component: ToolBar, Chat
+  Nueva instancia Vue: #app, store, beforeCreate, render
+
+App.vue
+  template:
+    v-app
+      v-snackbar
+	v-btn
+      div
+	v-expansion-panel
+	  v-expansion-panel-content
+	    div
+	    div
+	      tool-bar
+	      chat
+		v-btn
+
+  objeto:
+    name: app
+    data:
+      ala [int]
+      tabs [array]
+      active
+      a [null]
+    computed:
+      ws
+      chat store.chat
+      window	.window
+      snack	.snack
+    methods:
+      changeWindow 	# cambia active
+      changeala		# cambia ala???
+    mounted (nada)
+
+------------------------------
+
+type:
+  get
+  update
+  check
+  message
+
+
+{
+  header: message,
+  user: id,
+  data: ,
+
+}

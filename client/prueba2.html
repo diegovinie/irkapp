@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Prueba 2</title>
+  </head>
+  <style media="screen">
+  html,body {
+  	font:normal 0.9em arial,helvetica;
+  }
+  #log {
+  	width:600px;
+  	height:300px;
+  	border:1px solid #7F9DB9;
+  	overflow:auto;
+  }
+  #msg {
+  	width:400px;
+  }
+  </style>
+  <body>
+    <label for="chat">chat</label>
+    <div id="log">
+
+    </div>
+    <hr>
+    <label for="msg">mensaje</label>
+    <input type="textbox" name="msg" id="msg" value="">
+    <label for="contacts">contacts</label>
+    <input type="textbox" name="contacts" id="contacts" value="">
+    <hr>
+    <label for="events">eventos</label>
+    <input type="textbox" name="events" id="events" value="">
+    <hr>
+    <button onclick="init()">Conectar</button>
+    <button onclick="send()">Send</button>
+    <button onclick="quit()">Quit</button>
+    <button onclick="reconnect()">Reconnect</button>
+    <script type="text/javascript">
+      var socket;
+
+      function init() {
+        var host = 'ws://127.0.0.1:9000/echobot';
+
+        try {
+          socket = new WebSocket(host);
+          log('WebSocket - status ' +socket.readyState);
+          socket.onopen = function(msg){
+            console.log(msg);
+            log('Welcome - status ' + this.readyState);
+          }
+          socket.onmessage = function(msg){
+            console.log(msg);
+            log('Received: ' + msg.data);
+          };
+          socket.onclose = function(msg){
+            console.log(msg);
+            log('Disconnected - status ' +this.readyState);
+
+          };
+        }
+        catch(ex){
+          log(ex);
+        }
+        $('msg').focus();
+      }
+      function send(){
+        var txt,
+            msg;
+        txt = $('msg');
+        msg = txt.value;
+        if(!msg){
+          alert('mensaje vacío');
+          return;
+        }
+        txt.value = '';
+        txt.focus();
+        try {
+          socket.send(msg);
+          log('Sent: ' + msg);
+        }
+        catch(ex) {
+          log(ex);
+        }
+      }
+
+      function quit(){
+        if(socket != null){
+          log('chao!');
+          socket.close();
+          socket = null;
+        }
+      }
+
+      function reconnect(){
+        quit();
+        init();
+      }
+
+      function $(id){
+        return document.getElementById(id);
+      }
+
+      function log(msg){
+        $('log').innerHTML += '<br>'+ msg;}
+      function onkey(event){
+        if(event.keyCode == 13){
+          send();
+        }
+      }
+    </script>
+  </body>
+</html>
