@@ -158,7 +158,7 @@ class SocketServer extends WebSocketServer
             // Manda mensaje a un usuario
             if($m->type == 'message'){
 
-              $this->send($m->data->user, $m->data->content)
+              $this->send($m->data->user, $m->data->content);
             }
 
         }
