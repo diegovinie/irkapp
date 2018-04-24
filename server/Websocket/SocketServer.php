@@ -13,6 +13,8 @@ use ghedipunk\PHPWebsockets\WebSocketServer;
 
 class SocketServer extends WebSocketServer
 {
+    use SocketServerProcesses;
+
     public function __construct($addr, $port, $bufferLength = 2048)
     {
         parent::__construct($addr, $port, $bufferLength = 2048);
@@ -20,53 +22,7 @@ class SocketServer extends WebSocketServer
         self::checkClientStatus();
     }
 
-    public function checkUser($user)
-    {
-        $useM = new \Models\User;
 
-        $profile = $useM->findOne('id', 'nick', 'email')
-                  ->whereOrigin('=', $user->headers['origin'])
-                  ->descend('id')->exec();
-
-        if($profile){
-            $this->send($user, json_encode([
-                'header' => 'pseudoProfile',
-                'content' => $profile
-            ]));
-        }
-        else{
-            $this->send($user, json_encode([
-                'header' => 'request',
-                'type' => 'sign'
-            ]));
-        }
-    }
-
-    public function sendUserList($user=null)
-    {
-        $usr = new \Models\User();
-
-        $usersList = $usr->find('id', 'email', 'status')
-            ->whereStatus('!=', 0)->exec();
-
-        $preRes = [
-            'header' => 'update',
-            'data' => [
-                'usersList' => $usersList
-            ]
-        ];
-
-        $response = json_encode($preRes);
-
-        if($user){
-            $this->send($user, $response);
-        }
-        else{
-            foreach ($this->users as $user) {
-                $this->send($user, $response);
-            }
-        }
-    }
 
     public function checkClientStatus($user=null)
     {
@@ -89,30 +45,78 @@ class SocketServer extends WebSocketServer
     }
     //protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
 
-    public function checkEmail($user, $email)
-    {
-        $user = $useM->find('id')
-                  ->whereEmail('=', "$email")->exec();
+    // public function checkUser($user)
+    // {
+    //     $useM = new \Models\User;
+    //
+    //     $profile = $useM->findOne('id', 'nick', 'email')
+    //               ->whereOrigin('=', $user->headers['origin'])
+    //               ->descend('id')->exec();
+    //
+    //     if($profile){
+    //         $this->send($user, json_encode([
+    //             'header' => 'pseudoProfile',
+    //             'content' => $profile
+    //         ]));
+    //     }
+    //     else{
+    //         $this->send($user, json_encode([
+    //             'header' => 'request',
+    //             'type' => 'sign'
+    //         ]));
+    //     }
+    // }
 
-        $tpye = $user? 'password' : 'signup';
+    // public function sendUserList($user=null)
+    // {
+    //     $usr = new \Models\User();
+    //
+    //     $usersList = $usr->find('id', 'email', 'status')
+    //         ->whereStatus('!=', 0)->exec();
+    //
+    //     $preRes = [
+    //         'header' => 'update',
+    //         'data' => [
+    //             'usersList' => $usersList
+    //         ]
+    //     ];
+    //
+    //     $response = json_encode($preRes);
+    //
+    //     if($user){
+    //         $this->send($user, $response);
+    //     }
+    //     else{
+    //         foreach ($this->users as $user) {
+    //             $this->send($user, $response);
+    //         }
+    //     }
+    // }
 
-        $this->send($user, json_encode([
-            'header' => 'request',
-            'type' => $type
-        ]));
-    }
-
-    public function checkPassword($user, $email, $password)
-    {
-        $profile = $useM->findOne('id', 'nickname', 'avatar')
-                     ->whereEmail('=', "$email")
-                     ->wherePassword('=', md5($password))
-                     ->exec();
-        $res = $profile? ['header' => 'profile', 'content' => $profile] :
-            ['header' => 'error', 'type' => 'wrong_password'];
-
-        $this->send($user, json_encode($res));
-    }
+    // public function checkEmail($user, $email)
+    // {
+    //     $user = $useM->find('id')
+    //               ->whereEmail('=', "$email")->exec();
+    //
+    //     $tpye = $user? 'password' : 'signup';
+    //
+    //     $this->send($user, json_encode([
+    //         'header' => 'request',
+    //         'type' => $type
+    //     ]));
+    // }
+    //
+    // public function checkPassword($user, $email, $password)
+    // {
+    //     $profile = $useM->findOne('id', 'nickname', 'avatar')
+    //                  ->whereEmail('=', "$email")
+    //                  ->wherePassword('=', md5($password))
+    //                  ->exec();
+    //     $res = $profile? ['header' => 'profile', 'content' => $profile] :
+    //         ['header' => 'error', 'type' => 'wrong_password'];
+    //
+    //     $this->send($user, json_encode($res));
+    // }
 
     protected function process ($user, $message) {
 
@@ -123,6 +127,65 @@ class SocketServer extends WebSocketServer
         \hlp\logger("de: $user->id >> $message");
         var_dump(json_decode($message));
         $m = json_decode($message);
+
+        // Revisa el tipo de mensaje
+        switch ($m->type) {
+            // Solicita algo del servidor
+            case 'get':
+                # code...
+                switch ($m->data) {
+                    // Obtener la lista de usuarios
+                    case 'users':
+                    # code...
+                    break;
+
+                    default:
+                    # code...
+                    break;
+                }
+                break;
+
+            // Envía algún parámetro para su revisión
+            case 'check':
+                switch ($m->data->key) {
+                    // Verifica si existe el correo-e
+                    case 'email':
+                        # code...
+                        break;
+
+                    case 'password':
+
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+                break;
+
+            // Mensaje de chat
+            case 'privmsg':
+
+                break;
+
+            // Envía algo para actualizar
+            case 'update':
+                switch ($m->data->key) {
+                    // Actualiza el estado
+                    case 'status':
+                        # code...
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+                break;
+
+            default:
+                # code...
+                break;
+        }
 
         // Updates
         if($m->header == 'update'){
@@ -172,10 +235,10 @@ class SocketServer extends WebSocketServer
         // log? auth & send profile : signup
         // signup? reg, auth & send profile : send annonymus
 
-        $this->checkUser($user);
+        // $this->checkUser($user);
 
 
-        // $this->sendUserList();
+        $this->sendUserList();
 
       // Do nothing: This is just an echo server, there's no need to track the user.
       // However, if we did care about the users, we would probably have a cookie to
