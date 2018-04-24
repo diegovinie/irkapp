@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import ws from '../ws'
+import {logger} from '@/helpers'
 
 Vue.use(Vuex)
 
@@ -19,8 +20,17 @@ export default new Vuex.Store({
       show: false,
       content: '',
       timeout: 10000
+    },
+    gapi: null,
+    app: {
+      active: false,
+      id: null,
+      email: null
     }
   },
+  // getters: {
+  //   app: (state) => state.app
+  // },
   actions: {
     CHANGEWINDOW ({commit}, win) {
       commit('SETWINDOW', win)
@@ -35,14 +45,18 @@ export default new Vuex.Store({
       commit('SETSNACK', snack)
     },
     SIGN ({commit}, snack) {
-      console.log('en sign')
+      logger('SIGN')
       commit('SETSNACK', snack  )
+    },
+    ACTIVATE ({commit}, credentials) {
+      commit('SET_CREDENTIALS', credentials)
+      commit('SWITCH_ACTIVE')
     }
   },
   mutations: {
     SETUSERS (state, data) {
-      console.log('commiting SETUSERS')
-      console.log(data)
+      logger('commiting SETUSERS')
+      logger(data)
       state.users = data
     },
 
@@ -54,13 +68,26 @@ export default new Vuex.Store({
       state.mainWindow = data
     },
     ADDCHAT (state, data) {
-      console.log('addchat', data)
+      logger('addchat', data)
       state.chats.push({
         user: data.email
       })
     },
     SETSNACK (state, data) {
       state.snack = data
+    },
+    SET_GAPI (state, gapi) {
+      logger('SET_GAPI')
+      state.gapi = gapi
+    },
+    SET_CREDENTIALS (state, credentials) {
+      logger('SET_CREDENTIALS')
+      state.app.id = credentials.id
+      state.app.email = credentials.email
+    },
+    SWITCH_ACTIVE: (state) => {
+      logger('SWITCH_ACTIVE')
+      state.app.active = !state.app.active
     }
   }
 })
