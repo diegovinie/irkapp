@@ -19,7 +19,11 @@ Vue.component('ToolBar', ToolBar)
 Vue.component('Chat', Chat)
 // Vue.component('Snack', Snack)
 
+// El mensaje fastidioso en consola
 Vue.config.productionTip = false
+
+// Habilita los mensajes en consola de logger
+global.DEV_MSGS = true
 
 /* eslint-disable no-new */
 new Vue({

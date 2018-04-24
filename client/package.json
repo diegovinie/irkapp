@@ -5,6 +5,7 @@
   "author": "Diego Viniegra",
   "private": true,
   "scripts": {
+    "postinstall": "sh bin/get_gapi.sh",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",

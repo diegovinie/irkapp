@@ -33,8 +33,17 @@ v-app(dark light)
 </template>
 
 <script>
+/* eslint-disable no-new */
 import ws from './ws'
 import store from './store'
+import auth from './api/auth'
+import {logger} from '@/helpers'
+
+fetch("https://apis.google.com/js/api.js").then(function (res) {
+  console.log(res)
+}).catch(function (err) {
+  console.log(err)
+})
 
 export default {
   name: 'app',
@@ -66,10 +75,13 @@ export default {
   },
 
   mounted () {
+    window.onload = function () {
+      auth.getIdEmail()
 
-    // setTimeout( () => {
-    //   this.snackbar = true
-    // }, 2000)
+      setTimeout(function () {
+        logger(`el email es: ${store.state.app.email}`)
+      }, 5000)
+    }
   }
 }
 </script>
