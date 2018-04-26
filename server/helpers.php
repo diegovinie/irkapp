@@ -29,8 +29,18 @@ function logger($string, $debug=false){
     }
 }
 
-function bquote($item){
+/**
+ * Devuelve una cadena entre comillas reversas
+ */
+function bquote(/*string*/ $item){
     return "`".$item."`";
+}
+
+/**
+ * Devuelve una cadena entre comillas dobles
+ */
+function quote(/*string*/ $item){
+  return '"'.$item.'"';
 }
 
 /**

@@ -52,6 +52,7 @@ export default new Vuex.Store({
     ACTIVATE ({commit}, credentials) {
       commit('SET_CREDENTIALS', credentials)
       commit('SWITCH_ACTIVE')
+      // const socket = ws() // transitoriamente
     }
   },
   mutations: {

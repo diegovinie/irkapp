@@ -77,6 +77,16 @@ class Schema
     }
 
     /**
+     * Prepara una columna BIGINT
+     */
+    public function bigInt(string $name, $signed=false, $options=null)
+    {
+        $sign = $signed? '' : 'UNSIGNED';
+        $stmt = "`$name` BIGINT $sign" .Schema::parseOptions($options);
+        $this->addToColumn($stmt);
+    }
+
+    /**
      * Prepara una columna tipo int con autoincremento y sin signo
      */
     public function increment($name, $size=11)

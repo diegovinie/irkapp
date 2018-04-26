@@ -12,6 +12,27 @@ export default function createWebSocket () {
 
   socket.onopen = function (msg) {
     console.log('Status: ' + this.readyState)
+    const content = {
+      id: "12345678901234567890",
+      email: 'cosmonauta@cosmo.com',
+      name: 'Diego'
+    }
+
+    // const content = {
+    //   id: store.state.app.id,
+    //   email: store.state.app.email,
+    //   name: store.state.app.name
+    // }
+
+    const response = {
+      type: 'set',
+      data: {
+        header: 'credentials',
+        content
+      }
+    }
+
+    socket.send(JSON.stringify(response))
   }
 
   /**

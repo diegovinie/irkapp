@@ -5,7 +5,7 @@
  */
 
 use Database\PDOe;
-use Database\Migrations\SegundaMigracion as Mig; // migración actual
+use Database\Migrations\TerceraMigracion as Mig; // migración actual
 
 \hlp\logger("Creando la base de datos: ");
 PDOe::createDatabase();

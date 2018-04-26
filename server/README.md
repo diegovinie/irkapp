@@ -69,3 +69,18 @@ Identificarse con correo-e:
   header: 'request',
   type: 'sign'
 }
+
+Menajes al servidor:
+
+Manda id y email al iniciar:
+{
+  type: 'set',
+  data: {
+    header: 'credentials',
+    content: {
+      id: [int],
+      name: [string],
+      email: [string]
+    }
+  }
+}

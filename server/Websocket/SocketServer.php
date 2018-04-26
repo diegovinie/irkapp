@@ -19,7 +19,7 @@ class SocketServer extends WebSocketServer
     {
         parent::__construct($addr, $port, $bufferLength = 2048);
 
-        self::checkClientStatus();
+        // self::checkClientStatus();
     }
 
 
@@ -125,11 +125,22 @@ class SocketServer extends WebSocketServer
         //   \hlp\logger("de: {$GLOBALS['origin']} >> $message");
         // var_dump($user);
         \hlp\logger("de: $user->id >> $message");
+
         var_dump(json_decode($message));
         $m = json_decode($message);
 
         // Revisa el tipo de mensaje
         switch ($m->type) {
+            case 'set':
+                switch ($m->data->header) {
+                  case 'credentials':
+                    $this->setCredentials($user, $m->data->content);
+                    break;
+
+                  default:
+                    # code...
+                    break;
+                }
             // Solicita algo del servidor
             case 'get':
                 # code...
@@ -238,7 +249,7 @@ class SocketServer extends WebSocketServer
         // $this->checkUser($user);
 
 
-        $this->sendUserList();
+        // $this->sendUserList();
 
       // Do nothing: This is just an echo server, there's no need to track the user.
       // However, if we did care about the users, we would probably have a cookie to

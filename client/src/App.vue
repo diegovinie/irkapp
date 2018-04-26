@@ -17,7 +17,7 @@ v-app(dark light)
                 chat(v-show="window == 'chat'")
                   v-btn(@click="$data.window = 'toolbar'") tocame
           v-expansion-panel-content(v-else="!app.active")
-            div(slot="header" @click="login()") Iniciar
+            div(slot="header" @click="socket()") Iniciar
 </template>
 
 <script>
@@ -67,6 +67,9 @@ export default {
       } else {
         console.log('Error')
       }
+    },
+    socket: function () {
+      var socket = ws()
     }
   },
 
