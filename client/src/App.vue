@@ -1,19 +1,5 @@
 <template lang="pug">
 v-app(dark light)
-  v-snackbar(
-      :timeout="snack.timeout"
-      color=""
-      multi-line
-      vertical
-      absulute
-      right
-      v-model="snack.show"
-      :slot="snack.content"
-      style={bottom: '170px', right: '0px', maxWidth: '330px'}) ggg
-    //- div#snack-content hola fulano
-    //- div#snack-action
-    //- v-btn No soy fulano
-    v-btn(dark flat @click.native="snackbar = false") Cerrar
   div(style={
           backgroundColor: '#cee',
           width: '280px',
@@ -24,12 +10,14 @@ v-app(dark light)
           margin: 'auto',
           })
       v-expansion-panel
-          v-expansion-panel-content
-              div(slot="header") Chat
+          v-expansion-panel-content(v-if="app.active")
+              div(slot="header") {{ app.name }}
               div(style={height: "440px"})
                 tool-bar(v-show="window == 'toolbar'")
                 chat(v-show="window == 'chat'")
                   v-btn(@click="$data.window = 'toolbar'") tocame
+          v-expansion-panel-content(v-else="!app.active")
+            div(slot="header" @click="login()") Iniciar
 </template>
 
 <script>
@@ -38,12 +26,6 @@ import ws from './ws'
 import store from './store'
 import auth from './api/auth'
 import {logger} from '@/helpers'
-
-fetch("https://apis.google.com/js/api.js").then(function (res) {
-  console.log(res)
-}).catch(function (err) {
-  console.log(err)
-})
 
 export default {
   name: 'app',
@@ -54,6 +36,7 @@ export default {
       tabs: ['tab-chat1', 'tab-usuarios', 'tab-opciones'],
       active: null,
       a: null,
+      app: store.state.app
     }
   },
 
@@ -71,16 +54,30 @@ export default {
     },
     changeala: function () {
       this.ala = 1
+    },
+    login: async function () {
+      await auth.asyn.getGapiReady()
+      await auth.asyn.setClient()
+      const credentials = await auth.asyn.getIdentity()
+
+      console.log('iden es:')
+      console.log(credentials)
+      if (typeof credentials === 'object') {
+        store.dispatch('ACTIVATE', credentials)
+      } else {
+        console.log('Error')
+      }
     }
   },
 
   mounted () {
     window.onload = function () {
-      auth.getIdEmail()
 
-      setTimeout(function () {
-        logger(`el email es: ${store.state.app.email}`)
-      }, 5000)
+      // setTimeout(function () {
+      //   console.log('creando ws')
+      //   const socket = ws()
+      //   console.log(socket)
+      // }, 7000)
     }
   }
 }

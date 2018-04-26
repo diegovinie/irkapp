@@ -25,6 +25,7 @@ export default new Vuex.Store({
     app: {
       active: false,
       id: null,
+      name: null,
       email: null
     }
   },
@@ -84,6 +85,7 @@ export default new Vuex.Store({
       logger('SET_CREDENTIALS')
       state.app.id = credentials.id
       state.app.email = credentials.email
+      state.app.name = credentials.name
     },
     SWITCH_ACTIVE: (state) => {
       logger('SWITCH_ACTIVE')

@@ -26,10 +26,11 @@ Vue.config.productionTip = false
 global.DEV_MSGS = true
 
 /* eslint-disable no-new */
-new Vue({
+global.irkapp = new Vue({
   el: '#app',
   store,
   beforeCreate () {
+    // agrega el div#app en index.html
     (function () {
       var cont = document.createElement('div')
       cont.id = 'app'

@@ -1,4 +1,5 @@
 import store from '@/store'
+import {logger, thenableRejection as gapiReject} from '@/helpers'
 
 // Si ya fue previamiente invocado usará la almacenada
 if (store.state.gapi === null) {
@@ -14,7 +15,6 @@ const clientId = '664922332794-4397sha7iqrbpb7p27f3q1b9vuu2ojf8.apps.googleuserc
 const scope = 'profile'
 
 function loadClientLib () {
-  console.log(gapi)
   return gapi.load('client:auth2', initClient)
 }
 
@@ -25,17 +25,13 @@ function initClient (ev) {
       clientId,
       discoveryDocs,
       scope
-    }).catch(function (err) {
-      console.log('error en initClient')
-      console.log(err)
-      reject('d')
     }).then(function () {
       const auth = gapi.auth2.getAuthInstance()
       auth.isSignedIn.listen(updateSigninStatus)
 
       updateSigninStatus(auth.isSignedIn.get())
       resolve('h')
-    })
+    }, gapiReject)
   })
 }
 
@@ -75,7 +71,86 @@ function getId () {
   })
 }
 
+/**
+ * versiones asíncronas
+ */
+const asyn = {
+  /**
+   * Carga las librerías
+   *
+   * @return {object} gapi
+   */
+  getGapiReady: async function () {
+    await new Promise(function (resolve, reject) {
+      try {
+        gapi.load('client:auth2', resolve)
+      } catch (e) {
+        logger('Problemas para cargar las librerías')
+        console.log(e)
+        reject()
+      }
+    })
+    return gapi
+  },
+
+  /**
+   * Autentica al cliente
+   *
+   * @return {object} gapi
+   */
+  setClient: async function () {
+    await new Promise(function (resolve, reject) {
+      gapi.client.init({
+        apiKey,
+        clientId,
+        discoveryDocs,
+        scope
+      }).then(function () {
+        const auth = gapi.auth2.getAuthInstance()
+        // auth.isSignedIn.listen(updateSigninStatus)
+        auth.signIn().then(function (res) {
+          if (auth.isSignedIn.get()) {
+            resolve()
+          } else {
+            reject()
+          }
+        }, gapiReject)
+      })
+    })
+    return gapi
+  },
+
+  /**
+   * Consulta los datos del usuario
+   *
+   * @return {object} {id, givenName, email}
+   */
+  getIdentity: function () {
+
+    const auth = gapi.auth2.getAuthInstance()
+
+    if (auth.isSignedIn.get()) {
+      return new Promise(function (resolve, reject) {
+        gapi.client.request({
+          path: 'https://www.googleapis.com/oauth2/v1/userinfo'
+        }).then(function (res) {
+          let credentials = {
+            id: res.result.id,
+            email: res.result.email,
+            name: res.result.given_name
+          }
+          resolve(credentials)
+        }, gapiReject)
+      })
+    } else {
+      logger('getIdentity: Usuario no autenticado')
+      return null
+    }
+  }
+}
+
 export default {
+  asyn,
   getIdEmail: function () {
     loadClientLib()
   }

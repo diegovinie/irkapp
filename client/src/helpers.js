@@ -10,3 +10,8 @@ export const logger = function (msg) {
     console.log(msg)
   }
 }
+
+export const thenableRejection = (err) => {
+  console.log('error en thenable')
+  console.log(err)
+}
