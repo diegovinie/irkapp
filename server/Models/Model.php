@@ -69,7 +69,7 @@ class Model
         $bqCols = array_map('\hlp\bquote', $columns);
 
         $this->columns = implode($bqCols, ', ');
-        \hlp\logger($this->columns, true);
+        \hlp\logger("columnas: $this->columns");
 
         $this->query = "SELECT $this->columns FROM `$this->table`";
 
@@ -215,7 +215,7 @@ class Model
     public function exec()
     {
         $sentence = $this->query .$this->analizeJoins() .$this->analizeWhere();
-        \hlp\logger($sentence, true);
+        \hlp\logger($sentence);
         $stmt = $this->db->prepare($sentence);
 
         // Amarre de parámetros
@@ -232,7 +232,7 @@ class Model
         switch ($this->queryType) {
             case 'select':
                 if(!$res){
-                    \hlp\logger($stmt->errorInfo()[2]);
+                    \hlp\logger($stmt->errorInfo()[2], true);
                 }
                 else{
                     // var_dump($stmt->{($this->retrieve)}(PDO::FETCH_ASSOC)) ;
@@ -242,19 +242,19 @@ class Model
 
             case 'update':
                 if(!$res){
-                    \hlp\logger($stmt->errorInfo()[2]);
+                    \hlp\logger($stmt->errorInfo()[2], true);
                 }
                 else{
-                    \hlp\logger('update correcto.', true);
+                    \hlp\logger('update correcto.');
                 }
                 break;
 
             case 'insert':
                 if(!$res){
-                    \hlp\logger($stmt->errorInfo()[2]);
+                    \hlp\logger($stmt->errorInfo()[2], true);
                 }
                 else{
-                    \hlp\logger('insert correcto.', true);
+                    \hlp\logger('insert correcto.');
                 }
                 break;
 

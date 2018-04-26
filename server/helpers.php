@@ -14,18 +14,22 @@ namespace hlp;
  * @param string $string la cadena a registrar
  * @param bool $debug activa el registro
  */
-function logger($string, $debug=false){
+function logger($string, $log=false){
 
-    if($debug){
-        // Verifica si la depuración es activa en configuración
-        if(DEBUG == true){
+    // Verifica si la depuración es activa en configuración
+    if(DEBUG == true){
+        $dt = new \DateTime;
+        $date = $dt->format('d/m/y H:i:s');
+        echo "[$date]\n";
+        echo $string;
+        echo "\n------------\n\n";
+    }
+    else{
+        // Verifica y se debe registrar igual
+        if($log){
             echo $string;
             echo "\n";
         }
-    }
-    else{
-        echo $string;
-        echo "\n";
     }
 }
 

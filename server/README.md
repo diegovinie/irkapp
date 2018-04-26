@@ -1,9 +1,60 @@
 
 Es un json con la siguiente forma:
 {
-  header: [string],
+  type: [string],
   data: {
-    status: [string]
+    header: [string],
+    from: [string],
+    content: [mixed]
+  }
+}
+
+
+Mensajes desde el servidor:
+
+Actualización de la lista de usuarios:
+{
+  type: 'update',
+  data: {
+    header: 'user_list',
+    content: ['socket' => [string], 'name' => [string], 'email' => [string]]
+  }
+}
+
+Mensajes del sistema:
+{
+  type: 'message',
+  data: {
+    from: 'server',
+    content: [string]
+  }
+}
+
+
+Menajes al servidor:
+
+Manda id, name y email al iniciar:
+{
+  type: 'set',
+  data: {
+    header: 'credentials',
+    content: {
+      id: [int],
+      name: [string],
+      email: [string]
+    }
+  }
+}
+--------------------------------------------------
+(no revisado)
+
+Mandar mensaje a usuario:
+{
+  header: 'post',
+  type: 'message',
+  data: {
+    user: [string] el id del usuario
+    content: [string]
   }
 }
 
@@ -33,54 +84,3 @@ Indicar al servidor que estado ocupado:
   }
 }
 donde [int] n: 2 (ocupado)
-
-
-Mandar mensaje a usuario:
-{
-  header: 'post',
-  type: 'message',
-  data: {
-    user: [string] el id del usuario
-    content: [string]
-  }
-}
-
-
-Mensajes desde el servidor:
-
-Actualización de la lista de usuarios:
-{
-  header: 'update',
-  data: {
-    usersList: [array]
-  }
-}
-
-Peticiones del servidor:
-
-Pide pseudoProfile:
-{
-  header: 'request',
-  type: 'pseudoProfile'
-}
-
-Identificarse con correo-e:
-{
-  header: 'request',
-  type: 'sign'
-}
-
-Menajes al servidor:
-
-Manda id y email al iniciar:
-{
-  type: 'set',
-  data: {
-    header: 'credentials',
-    content: {
-      id: [int],
-      name: [string],
-      email: [string]
-    }
-  }
-}

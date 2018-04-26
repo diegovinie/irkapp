@@ -15,7 +15,7 @@ const DB_PWD = 'tester';
 // Bibliotecas
 const LIB_DIR = 'lib';
 
-const DEBUG = true;
+const DEBUG = false;
 
 // Datos por defecto del servidor
 const SRV_HOST = '127.0.0.1';

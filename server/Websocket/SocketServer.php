@@ -10,10 +10,12 @@
 namespace Websocket;
 
 use ghedipunk\PHPWebsockets\WebSocketServer;
+use ghedipunk\PHPWebsockets\WebSocketUser;
 
 class SocketServer extends WebSocketServer
 {
     use SocketServerProcesses;
+    use SocketServerMessages;
 
     public function __construct($addr, $port, $bufferLength = 2048)
     {
@@ -23,7 +25,9 @@ class SocketServer extends WebSocketServer
     }
 
 
-
+    /**
+     * sin uso
+     */
     public function checkClientStatus($user=null)
     {
         $clis = new \Models\Client;
@@ -43,98 +47,31 @@ class SocketServer extends WebSocketServer
         }
 
     }
-    //protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
 
-    // public function checkUser($user)
-    // {
-    //     $useM = new \Models\User;
-    //
-    //     $profile = $useM->findOne('id', 'nick', 'email')
-    //               ->whereOrigin('=', $user->headers['origin'])
-    //               ->descend('id')->exec();
-    //
-    //     if($profile){
-    //         $this->send($user, json_encode([
-    //             'header' => 'pseudoProfile',
-    //             'content' => $profile
-    //         ]));
-    //     }
-    //     else{
-    //         $this->send($user, json_encode([
-    //             'header' => 'request',
-    //             'type' => 'sign'
-    //         ]));
-    //     }
-    // }
-
-    // public function sendUserList($user=null)
-    // {
-    //     $usr = new \Models\User();
-    //
-    //     $usersList = $usr->find('id', 'email', 'status')
-    //         ->whereStatus('!=', 0)->exec();
-    //
-    //     $preRes = [
-    //         'header' => 'update',
-    //         'data' => [
-    //             'usersList' => $usersList
-    //         ]
-    //     ];
-    //
-    //     $response = json_encode($preRes);
-    //
-    //     if($user){
-    //         $this->send($user, $response);
-    //     }
-    //     else{
-    //         foreach ($this->users as $user) {
-    //             $this->send($user, $response);
-    //         }
-    //     }
-    // }
-
-    // public function checkEmail($user, $email)
-    // {
-    //     $user = $useM->find('id')
-    //               ->whereEmail('=', "$email")->exec();
-    //
-    //     $tpye = $user? 'password' : 'signup';
-    //
-    //     $this->send($user, json_encode([
-    //         'header' => 'request',
-    //         'type' => $type
-    //     ]));
-    // }
-    //
-    // public function checkPassword($user, $email, $password)
-    // {
-    //     $profile = $useM->findOne('id', 'nickname', 'avatar')
-    //                  ->whereEmail('=', "$email")
-    //                  ->wherePassword('=', md5($password))
-    //                  ->exec();
-    //     $res = $profile? ['header' => 'profile', 'content' => $profile] :
-    //         ['header' => 'error', 'type' => 'wrong_password'];
-    //
-    //     $this->send($user, json_encode($res));
-    // }
-
+    /**
+     * Maneja cada mensaje entrante
+     */
     protected function process ($user, $message) {
 
+        \hlp\logger("Mensaje entrante de: $user->id:\n$message");
 
-        // $this->send($user,$message);
-        //   \hlp\logger("de: {$GLOBALS['origin']} >> $message");
-        // var_dump($user);
-        \hlp\logger("de: $user->id >> $message");
-
-        var_dump(json_decode($message));
         $m = json_decode($message);
 
         // Revisa el tipo de mensaje
         switch ($m->type) {
+            // Para configurar algo en el servidor
             case 'set':
                 switch ($m->data->header) {
+                  // El primer mensaje cuando alguien conecta
                   case 'credentials':
-                    $this->setCredentials($user, $m->data->content);
+                    $credentials = $m->data->content;
+                    // Configura las credenciales en la bd
+                    $this->setCredentials($user, $credentials);
+                    // Actualiza la lista de usuarios de todos
+                    $this->sendUserList();
+                    // Avisa a los demás de la nueva conexión
+                    $message = "$credentials->name conectado.";
+                    $this->anyoneElseBroadcast($user, $message);
                     break;
 
                   default:
@@ -197,59 +134,13 @@ class SocketServer extends WebSocketServer
                 # code...
                 break;
         }
-
-        // Updates
-        if($m->header == 'update'){
-          // Actualiza el status
-          if($m->data->status){
-            $usr = new \Models\User;
-            $usr->update('status', $m->data->status)
-              ->whereName('=', $user->id)->exec();
-          }
-        }
-
-        // Gets
-        if($m->header == 'get'){
-          // Pide la lista de usuarios
-          if($m->data == 'users'){
-
-            $this->sendUserList($user);
-          }
-        }
-
-        // Posts
-        if($m->header == 'post'){
-            // Manda a chequear el email
-            if($m->type == 'email'){
-
-                $this->checkEmail($user, $m->data);
-            }
-            // Manda a chequear la clave
-            if($m->type == 'password'){
-                $this->checkPassword($user, ...$m->data);
-            }
-
-            // Manda mensaje a un usuario
-            if($m->type == 'message'){
-
-              $this->send($m->data->user, $m->data->content);
-            }
-
-        }
-
     }
 
     protected function connected ($user) {
 
-        // el origen es conocido? welcomeback : ask sign
-        // sign? log : send annonymus
-        // log? auth & send profile : signup
-        // signup? reg, auth & send profile : send annonymus
-
         // $this->checkUser($user);
 
-
-        // $this->sendUserList();
+        $this->welcome($user);
 
       // Do nothing: This is just an echo server, there's no need to track the user.
       // However, if we did care about the users, we would probably have a cookie to
@@ -258,12 +149,36 @@ class SocketServer extends WebSocketServer
 
     protected function closed ($user) {
 
-        \Controllers\Registration::disconnect($user);
+        $this->disconnectUser($user);
 
         $this->sendUserList();
 
       // Do nothing: This is where cleanup would go, in case the user had any sort of
       // open files or other objects associated with them.  This runs after the socket
       // has been closed, so there is no need to clean up the socket itself here.
+    }
+
+    /**
+     * Procedimiento para actualizar y avisar la desconexión de un usuario
+     */
+    public function disconnectUser(WebSocketUser $user)
+    {
+        $userTable = new \Models\User;
+
+        // Recupera el nombre de quien desconecta
+        $fetch = $userTable->findOne('name')
+            ->whereSocket('=', $user->id)->exec();
+
+        $name = $fetch['name'];
+
+        // Actualiza su estatus a 0
+        $userTable->update('status', 0)
+            ->whereSocket('=', $user->id)->exec();
+
+        // Avisa a los demás usuarios de la desconexión
+        $message = "$name desconectado.";
+        $this->broadcast($message);
+
+        \hlp\logger($message, true);
     }
 }

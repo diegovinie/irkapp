@@ -14,7 +14,7 @@ spl_autoload_register(function($class){
 
     $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $class);
 
-    \hlp\logger("Autoload Clase: " .$fileName.".php", true);
+    \hlp\logger("Autoload Clase: " .$fileName.".php");
 
     include_once $fileName .'.php';
 });
