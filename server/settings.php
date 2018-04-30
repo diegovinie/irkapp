@@ -15,6 +15,7 @@ const DB_PWD = 'tester';
 // Bibliotecas
 const LIB_DIR = 'lib';
 
+// Mensajes del sistema
 const DEBUG = true;
 
 // Datos por defecto del servidor
