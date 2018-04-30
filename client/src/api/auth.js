@@ -1,3 +1,9 @@
+/**
+ * Métodos para comunicarse con la Api de Google y autenticar
+ *
+ * Actualmente en uso la versión 'async' a través del objeto 'asyn'
+ */
+
 import store from '@/store'
 import {logger, thenableRejection as gapiReject} from '@/helpers'
 
@@ -9,6 +15,7 @@ if (store.state.gapi === null) {
 
 const gapi = store.state.gapi
 
+// Parámetros para conectarse a Google
 const apiKey = 'AIzaSyA5YYzsAqiXx09Dvv7rtA_XeNjSmd1FNog'
 const discoveryDocs = ["https://people.googleapis.com/$discovery/rest?version=v1"]
 const clientId = '664922332794-4397sha7iqrbpb7p27f3q1b9vuu2ojf8.apps.googleusercontent.com'

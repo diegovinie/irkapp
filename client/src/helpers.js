@@ -11,6 +11,11 @@ export const logger = function (msg) {
   }
 }
 
+/**
+ * Maneja los errores en los thenables de google
+ *
+ * @param {obj} err el error que devuelve google
+ */
 export const thenableRejection = (err) => {
   console.log('error en thenable')
   console.log(err)

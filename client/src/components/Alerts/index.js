@@ -8,6 +8,7 @@
 
 import store from '@/store'
 import Message from './Message'
+import {logger} from '@/helpers'
 
 export default {
   components: {
@@ -33,9 +34,11 @@ export default {
     }
   }),
   computed: {
+    // El array de alerts
     messages: () => store.state.alerts
   },
   watch: {
-    messages: () => console.log('Mensaje nuevo')
+    // Avisa cuando llega un nuevo alert
+    messages: () => logger('Mensaje nuevo')
   }
 }

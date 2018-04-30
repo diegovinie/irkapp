@@ -56,6 +56,11 @@ div
 </template>
 
 <script>
+/**
+ * Chat es el área donde se ven los mensajes de la conversation activa
+ * y está el text-area para enviar mensajes. Está al mismo nivel de ToolBar
+ */
+
 import store from '@/store'
 
 export default {

@@ -9,15 +9,13 @@ import './assets/css/materialicons.css'
 
 import store from './store'
 
-import ToolBar from './components/ToolBar2'
+import ToolBar from './components/ToolBar'
 import Chat from './components/Chat'
-// import Snack from './components/Snack'
 
 Vue.use(Vuetify)
 
 Vue.component('ToolBar', ToolBar)
 Vue.component('Chat', Chat)
-// Vue.component('Snack', Snack)
 
 // El mensaje fastidioso en consola
 Vue.config.productionTip = false

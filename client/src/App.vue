@@ -30,6 +30,7 @@ import store from '@/store'
 import auth from '@/api/auth'
 import Alerts from '@/components/Alerts'
 
+// Funciones de ayuda y datos de prueba
 import {logger} from '@/helpers'
 import {tempAlert} from '@/../test/datosprueba'
 
@@ -49,13 +50,11 @@ export default {
   },
 
   computed: {
-    // chat: () => store.state.chat,
     window: () => store.state.mainWindow,
-    // snack: () => store.state.snack
   },
 
   methods: {
-
+    // Inicia la autorización de Google
     login: async function () {
       this.start = 'Iniciando...'
       await auth.asyn.getGapiReady()
@@ -65,11 +64,13 @@ export default {
       console.log('iden es:')
       console.log(credentials)
       if (typeof credentials === 'object') {
+        // Activa, fija las credenciales y conecta con el WebSocket
         store.dispatch('ACTIVATE', credentials)
       } else {
         console.log('Error')
       }
     },
+    // Método alternativo para iniciar el WebSocket
     socket: function () {
       return ws()
     }
@@ -77,17 +78,7 @@ export default {
 
   mounted () {
     // Alert mensaje entrante de prueba
-    tempAlert(store)
-
-    window.onload = function () {
-
-
-      // setTimeout(function () {
-      //   console.log('creando ws')
-      //   const socket = ws()
-      //   console.log(socket)
-      // }, 7000)
-    }
+    // tempAlert(store)
   }
 }
 </script>

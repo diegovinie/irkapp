@@ -1,3 +1,10 @@
+/**
+ * Administra el estado
+ *
+ * Crea un objeto Vuex con las variables para la comunicación entre
+ * componentes y los métodos para modificarlas.
+ */
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 

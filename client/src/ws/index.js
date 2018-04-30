@@ -1,5 +1,9 @@
-/*
- * Revisar msg = {..., data: (json){header: string, type: string, data: mixed}}
+/**
+ * Conexión con WebSocket.
+ *
+ * Exporta una función que devuelve un objeto WebSocket con los
+ * métodos para trabajar. La Intención es que sea almacenado en el
+ * store.
  */
 
 import store from '../store'

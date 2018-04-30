@@ -30,7 +30,7 @@ export default {
       return ''
     }
   },
-
+  // Lo importado del padre
   props: ['from', 'content', 'type', 'id'],
 
   mounted: function () {
