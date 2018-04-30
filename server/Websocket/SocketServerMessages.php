@@ -60,4 +60,10 @@ trait SocketServerMessages
       ];
       $this->send($user, json_encode($message));
     }
+
+    public function redirectMessage($message)
+    {
+      // encontrar user con message.to
+      // send
+    }
 }

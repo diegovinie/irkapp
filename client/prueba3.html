@@ -58,6 +58,7 @@ function init() {
 		log(ex);
 	}
 	$("msg").focus();
+	console.log(socket);
 }
 
 function send(){
@@ -88,6 +89,14 @@ function quit(){
 function reconnect() {
 	quit();
 	init();
+}
+
+var sendMessage = function (user, msg) {
+	const response = {
+		to: user,
+		content: msg
+	}
+	socket.send(JSON.stringify(response))
 }
 
 // Utilities

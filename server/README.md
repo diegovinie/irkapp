@@ -16,7 +16,7 @@ Actualización de la lista de usuarios:
 {
   type: 'update',
   data: {
-    header: 'user_list',
+    header: 'users_list',
     content: ['socket' => [string], 'name' => [string], 'email' => [string]]
   }
 }

@@ -112,7 +112,9 @@ class SocketServer extends WebSocketServer
                 break;
 
             // Mensaje de chat
-            case 'privmsg':
+            case 'message':
+                $this->storeMessage($user, $message);
+                $this->redirectMessage($user, $message);
 
                 break;
 

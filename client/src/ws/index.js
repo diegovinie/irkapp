@@ -46,9 +46,30 @@ export default function createWebSocket () {
     console.log(pmsg)
 
     // Si el servidor manda actualización
-    if (pmsg.header == 'update') {
-      // actualiza la lista de usuarios
-      store.commit('SETUSERS', pmsg.data.usersList)
+    if (pmsg.type == 'update') {
+      if (pmsg.data.header == 'users_list') {
+        console.log(pmsg.data.content);
+        // actualiza la lista de usuarios
+        store.commit('SET_USERS_LIST', pmsg.data.content)
+      }
+    }
+
+    // Si llega un mensaje
+    if (pmsg.type == 'message') {
+      const chats = store.state.chats
+      // Busca si ya hay conversaciones con el remitente
+      const chat = chats.find((item) => item.from == pmsg.data.content.from)
+      if (!user) {
+        let data = {
+          from: pmsg.data.content.from,
+          id: chats.length + 1,
+          conversation: [pmsg.data.content.message]
+        }
+        store.commit('ADD_CHAT', data)
+      } else {
+
+        store.commit('ADD_MSG', chat, pmsg.data.content.message)
+      }
     }
 
     // Se el servidor pide algo

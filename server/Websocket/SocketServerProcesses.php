@@ -4,6 +4,7 @@ namespace WebSocket;
 
 use ghedipunk\PHPWebsockets\WebSocketUser;
 use Models\User;
+use Models\Message as MessagesTable;
 
 trait SocketServerProcesses
 {
@@ -51,7 +52,7 @@ trait SocketServerProcesses
           'type' => 'update',
           'data' => [
             'header' => 'users_list',
-            'content' => $users
+            'content' => array_values($users)
           ]
         ];
 
@@ -115,6 +116,19 @@ trait SocketServerProcesses
 
                 \hlp\logger("Usuario $name actualizado.", true);
         }
+    }
+
+    public function storeMessage(WebSocketUser $user, $message)
+    {
+      $msgTable = new MessagesTable;
+      $from = bquote($user->id);
+      $to = bquote($message->to);
+      $msg = bquote($message->content);
+      $msgTable->insert(null, $from, $to, $msg, 0, null, 0, null, null, null)
+          ->exec();
+      // getlastid
+      // date: timestamp
+      // return mesasge
     }
 
     /**

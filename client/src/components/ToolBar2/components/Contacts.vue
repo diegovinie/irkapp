@@ -7,10 +7,12 @@ v-container(fluid, grid-list-lg style={backgroundColor: 'gray', overflow: 'auto'
                 v-list
                   v-list-tile(v-for="user, i in users", :key="i" @click="openChat(user)")
                     v-list-tile-content
-                      v-list-tile-title {{user.email}}
+                      v-list-tile-title {{user.name}}
                       v-list-tile-sub-title
-                        span(v-if="user.status == 1") conectado
-                        span(v-else) ocupado
+                        span(v-if="user.status == 0") desconectado
+                        span(v-else-if="user.status == 1") conectado
+                        span(v-else-if="user.status == 2") ocupado
+                        span(v-else="user.status == 3") desconocido
                     v-icon(:color="status(user.status)") star_border
 </template>
 
@@ -18,9 +20,15 @@ v-container(fluid, grid-list-lg style={backgroundColor: 'gray', overflow: 'auto'
 import store from '@/store'
 
 export default {
+  data: () => {
+    return {
+
+    }
+  },
   computed: {
-    users: () => store.state.users,
+    // users: () => store.state.users,
     chats: () => store.state.chats,
+    users: () => store.state.users
   },
 
   methods: {

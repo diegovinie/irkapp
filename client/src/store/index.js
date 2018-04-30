@@ -3,19 +3,27 @@ import Vuex from 'vuex'
 
 import ws from '../ws'
 import {logger} from '@/helpers'
+import {alerts as datosAlerts} from '../../test/datosprueba'
+import {users as datosUsers} from '../../test/datosprueba'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     ws: ws,
-    users: [],
+    users: datosUsers,
     chat: {
       id: null,
       name: 'Chat'
     },
     mainWindow: 'toolbar',
-    chats: [],
+    chats: [{
+      id: null,
+      from: null,
+      conversation: [
+
+      ]
+    }],
     snack: {
       show: false,
       content: '',
@@ -23,11 +31,12 @@ export default new Vuex.Store({
     },
     gapi: null,
     app: {
-      active: false,
+      active: true,
       id: null,
       name: null,
       email: null
-    }
+    },
+    alerts: datosAlerts
   },
   // getters: {
   //   app: (state) => state.app
@@ -52,14 +61,14 @@ export default new Vuex.Store({
     ACTIVATE ({commit}, credentials) {
       commit('SET_CREDENTIALS', credentials)
       commit('SWITCH_ACTIVE')
-      // const socket = ws() // transitoriamente
+      const socket = ws() // transitoriamente
     }
   },
   mutations: {
-    SETUSERS (state, data) {
-      logger('commiting SETUSERS')
-      logger(data)
+    SET_USERS_LIST (state, data) {
+      logger('commiting SET_USERS_LIST')
       state.users = data
+      logger(data[0]['name'])
     },
 
     SETCHAT (state, data) {
@@ -69,11 +78,14 @@ export default new Vuex.Store({
     SETWINDOW (state, data) {
       state.mainWindow = data
     },
-    ADDCHAT (state, data) {
-      logger('addchat', data)
-      state.chats.push({
-        user: data.email
-      })
+    ADD_CHAT (state, data) {
+      logger('add_chat', data)
+      state.chats.push()
+    },
+    ADD_MSG (state, chat, message) {
+      logger('add_msg')
+      const chate = state.chats.find((item) => item === chat)
+      chate.conversation.push(message)
     },
     SETSNACK (state, data) {
       state.snack = data
@@ -91,6 +103,15 @@ export default new Vuex.Store({
     SWITCH_ACTIVE: (state) => {
       logger('SWITCH_ACTIVE')
       state.app.active = !state.app.active
+    },
+    CLEAR_ALERTS: (state) => {
+      logger('CLEAR_ALERTS')
+      state.alerts = []
+    },
+
+    ADD_ALERT: (state, msg) =>{
+      logger('ADD_ALERT')
+      state.alerts.push(msg)
     }
   }
 })

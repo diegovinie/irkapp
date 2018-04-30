@@ -7,7 +7,7 @@ div
             img
           v-list-tile-content
             v-list-tile-title(v-html="chat.user")
-            v-list-tile-sub-title
+            v-list-tile-sub-title eee
 </template>
 
 <script>
