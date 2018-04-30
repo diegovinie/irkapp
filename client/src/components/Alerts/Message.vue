@@ -1,21 +1,35 @@
 <template lang="pug">
   div
     v-alert(
-        :type="type"
+        :type="alertType"
         v-model="active"
         dismissible
         transition="slide-y-reverse-transition")
-      div {{ from }} id:{{id}}
       v-spacer
-      div {{ content }}
+      div
+        b {{ from }}:
+        span  {{ content }}
 </template>
 
 <script>
 export default {
   data: () => ({
-    countdown: 5000,
+    countdown: 10000,
     active: false,
   }),
+
+  computed: {
+    // Según el tipo de mensaje
+    alertType: function () {
+      if (this.type === 'privmsg') {
+        return 'success'
+      }
+      if (this.type === 'srvmsg') {
+        return 'info'
+      }
+      return ''
+    }
+  },
 
   props: ['from', 'content', 'type', 'id'],
 

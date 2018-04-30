@@ -24,10 +24,8 @@ Actualización de la lista de usuarios:
 Mensajes del sistema:
 {
   type: 'message',
-  data: {
-    from: 'server',
-    content: [string]
-  }
+  from: 'server',
+  content: [string]
 }
 
 

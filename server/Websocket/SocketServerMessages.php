@@ -52,11 +52,9 @@ trait SocketServerMessages
       $welcome = "Hola!";
 
       $message = [
-        'type' => 'message',
-        'data' => [
-          'from' => 'server',
-          'content' => $welcome
-        ]
+        'type' => 'srvmsg',
+        'from' => 'server',
+        'content' => $welcome        
       ];
       $this->send($user, json_encode($message));
     }

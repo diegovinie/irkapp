@@ -10,15 +10,17 @@ v-app(dark light)
       bottom: '0',
       margin: 'auto',
       })
-    v-expansion-panel
-        v-expansion-panel-content(v-if="app.active")
+    v-expansion-panel(v-if="app.active")
+        v-expansion-panel-content
             div(slot="header") {{ app.name || 'dummie' }}
             div(style={height: "440px"})
-              //- tool-bar(v-show="window == 'toolbar'")
-              //- chat(v-show="window == 'chat'")
-              //-   v-btn(@click="$data.window = 'toolbar'") tocame
-        v-expansion-panel-content(v-else="!app.active")
-          div(slot="header" @click="socket()") Iniciar
+              tool-bar(v-show="window == 'toolbar'")
+              chat(v-show="window == 'chat'")
+                v-btn(@click="$data.window = 'toolbar'") tocame
+    div(v-else="!app.active" style={backgroundColor: '#000'} text-align="center")
+      v-btn(@click="login()") {{ start }}
+    //- div(v-else="!app.active")
+    //-   div(slot="header" ) Iniciar
 </template>
 
 <script>
@@ -26,8 +28,10 @@ v-app(dark light)
 import ws from '@/ws'
 import store from '@/store'
 import auth from '@/api/auth'
-import {logger} from '@/helpers'
 import Alerts from '@/components/Alerts'
+
+import {logger} from '@/helpers'
+import {tempAlert} from '@/../test/datosprueba'
 
 export default {
   name: 'app',
@@ -38,24 +42,22 @@ export default {
 
   data: function () {
     return {
-      tabs: ['tab-chat1', 'tab-usuarios', 'tab-opciones'],
+      start: 'Iniciar',
+      // tabs: ['tab-chat1', 'tab-usuarios', 'tab-opciones'],
       app: store.state.app,
-      men: {
-        title: 'Shit',
-        content: 'ola ke ace'
-      }
     }
   },
 
   computed: {
-    chat: () => store.state.chat,
+    // chat: () => store.state.chat,
     window: () => store.state.mainWindow,
-    snack: () => store.state.snack
+    // snack: () => store.state.snack
   },
 
   methods: {
 
     login: async function () {
+      this.start = 'Iniciando...'
       await auth.asyn.getGapiReady()
       await auth.asyn.setClient()
       const credentials = await auth.asyn.getIdentity()
@@ -74,13 +76,9 @@ export default {
   },
 
   mounted () {
-    setTimeout( () => {
-      store.commit('ADD_ALERT', {
-        from: 'Che',
-        content: 'porque se fue',
-        type: 'success'
-      })
-    }, 12000)
+    // Alert mensaje entrante de prueba
+    tempAlert(store)
+
     window.onload = function () {
 
 
