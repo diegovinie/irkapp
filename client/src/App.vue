@@ -33,6 +33,7 @@ import Alerts from '@/components/Alerts'
 // Funciones de ayuda y datos de prueba
 import {logger} from '@/helpers'
 import {tempAlert} from '@/../test/datosprueba'
+import login from '@/login'
 
 export default {
   name: 'app',
@@ -44,7 +45,6 @@ export default {
   data: function () {
     return {
       start: 'Iniciar',
-      // tabs: ['tab-chat1', 'tab-usuarios', 'tab-opciones'],
       app: store.state.app,
     }
   },
@@ -54,22 +54,8 @@ export default {
   },
 
   methods: {
-    // Inicia la autorización de Google
-    login: async function () {
-      this.start = 'Iniciando...'
-      await auth.asyn.getGapiReady()
-      await auth.asyn.setClient()
-      const credentials = await auth.asyn.getIdentity()
-
-      console.log('iden es:')
-      console.log(credentials)
-      if (typeof credentials === 'object') {
-        // Activa, fija las credenciales y conecta con el WebSocket
-        store.dispatch('ACTIVATE', credentials)
-      } else {
-        console.log('Error')
-      }
-    },
+    // Método para autenticar en Google e iniciar el WebSocket
+    login,
     // Método alternativo para iniciar el WebSocket
     socket: function () {
       return ws()

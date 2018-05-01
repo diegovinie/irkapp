@@ -27,6 +27,9 @@ export default {
       if (this.type === 'srvmsg') {
         return 'info'
       }
+      if (this.type === 'error') {
+        return 'error'
+      }
       return ''
     }
   },

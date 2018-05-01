@@ -121,7 +121,11 @@ const asyn = {
           } else {
             reject()
           }
-        }, gapiReject)
+        }, function (err) {
+          console.log('setClient reject')
+          console.log(err)
+          reject(err)
+        })
       })
     })
     return gapi
