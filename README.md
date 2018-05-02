@@ -20,7 +20,7 @@ Se recomienda tener un terminal de *shell* para cliente y otro para servidor.
 
 Clonar el repositorio
 ```bash
-$ git clone https://...
+$ git clone https://github.com/diegovinie/irkapp.git
 ```
 
 Cambiar en el archivo `server/settings.php` los parámetros referentes a la base de datos.

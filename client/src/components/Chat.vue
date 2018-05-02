@@ -13,7 +13,7 @@ div
               overflow: 'auto',
               height: '280px',
               backgroundColor: '#5e5050'})
-          v-flex(xs12 v-for="msg in chat.conversation")
+          v-flex(xs12 v-for="msg, i in chat.conversation", :key="i")
               v-card
                   //- v-card-title
                   v-card-actions
